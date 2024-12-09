@@ -97,7 +97,7 @@ const MenuBar = () => {
       };
 
       await axios.post(
-        "https://menu-mern-stack-app.onrender.com/api/menus",
+       import.meta.env.VITE_API_URL,
         payload
       );
       triggerRefresh();

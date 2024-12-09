@@ -21,7 +21,7 @@ const ToggleButtons = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        "https://menu-mern-stack-app.onrender.com/api/menus"
+       import.meta.env.VITE_API_URL
       );
       setMenus(response.data);
       setSelected(response.data[0]._id);
