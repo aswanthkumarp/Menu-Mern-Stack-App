@@ -8,9 +8,10 @@ import {
   CardContent,
 } from "@mui/material";
 
-const MenuDisplay = () => {
+const MenuDisplay = ({ menus, selected }) => {
+  const currentMenu = menus.find((menu) => menu._id === selected);
 
-  
+
   return (
     <Box
       sx={{
@@ -58,7 +59,7 @@ const MenuDisplay = () => {
           }}
         />
 
-        {/* Title */}
+    
         <Typography
           variant="h4"
           align="center"
@@ -76,32 +77,40 @@ const MenuDisplay = () => {
             color: "#FFFFFF",
           }}
         >
-          Brunch Cocktails
+          {currentMenu?.name}
         </Typography>
 
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <Box sx={{ textAlign: "left" }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  borderBottom: "1px solid #fff",
-                  paddingBottom: "0.5rem",
-                  marginBottom: "1rem",
-                  fontWeight: "bold",
-                }}
-              >
-                <span>Cinnamon Toast Crunch</span>
-                <span>$16</span>
-              </Typography>
-              <Typography variant="body2" sx={{ marginBottom: "2rem" }}>
-                Screwball peanut butter whiskey, vanilla extract, Amaretto,
-                Baileys, egg white, cinnamon
-              </Typography>
+          {currentMenu.items.map((item, index) => (
+            <Grid item xs={12} md={6}>
+              <Box sx={{ textAlign: "left" }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    borderBottom: "1px solid #fff",
+                    paddingBottom: "0.5rem",
+                    marginBottom: "1rem",
+                    fontWeight: "bold",
+                    fontFamily: "Oswald",
+                  }}
+                >
+                  <span>{item.name}</span>
+                  <span>${item.price}</span>
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    marginBottom: "2rem",
+                    fontFamily: "Kelly Slab",
+                    color: "#FFFFFFBF",
+                  }}
+                >
+                  {item.description}
+                </Typography>
 
-              <Typography
+                {/* <Typography
                 variant="body1"
                 sx={{
                   display: "flex",
@@ -118,32 +127,10 @@ const MenuDisplay = () => {
               <Typography variant="body2">
                 Tito’s, tomato juice, Worcestershire, celery salt, black pepper,
                 Tabasco, fully loaded
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Box sx={{ textAlign: "left" }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  borderBottom: "1px solid #fff",
-                  paddingBottom: "0.5rem",
-                  marginBottom: "1rem",
-                  fontWeight: "bold",
-                }}
-              >
-                <span>Moet Spritz</span>
-                <span>$20</span>
-              </Typography>
-              <Typography variant="body2" sx={{ marginBottom: "2rem" }}>
-                Aperol, St Germain, botanical liquor, fresh lime juice, mini
-                brut Moet topper
-              </Typography>
-            </Box>
-          </Grid>
+              </Typography> */}
+              </Box>
+            </Grid>
+          ))}
         </Grid>
 
         <Box
@@ -152,8 +139,8 @@ const MenuDisplay = () => {
           alt="Cocktail Image"
           sx={{
             position: "absolute",
-            bottom: "-40px",
-            right: "-40px",
+            bottom: "-80px",
+            right: "-80px",
             height: {
               xs: "111px",
               lg: "281px",

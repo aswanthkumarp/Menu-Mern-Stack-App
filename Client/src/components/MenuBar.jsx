@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -20,7 +20,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { MenuContext } from "../context/MenuContext";
 
 const MenuBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,7 +30,8 @@ const MenuBar = () => {
     menuDescription: "",
     items: [{ name: "", description: "", price: "" }],
   });
-  const [loading, setLoading] = useState(false); // Loader state
+  const [loading, setLoading] = useState(false);
+  const { triggerRefresh } = useContext(MenuContext);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -55,7 +56,6 @@ const MenuBar = () => {
     if (field === "menuName" || field === "menuDescription") {
       setMenuData({ ...menuData, [field]: value });
     } else if (field === "price") {
-      // Restrict price to numbers only
       if (/^\d*\.?\d*$/.test(value)) {
         const updatedItems = [...menuData.items];
         updatedItems[index][field] = value;
@@ -76,61 +76,83 @@ const MenuBar = () => {
   };
 
   const handleSubmit = async () => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const { menuName, menuDescription, items } = menuData;
 
-      const updatedItems = items.map((item) => ({
-        ...item,
-        price: Number(item.price),
-      }));
+      if (!menuName || !menuDescription || items.length === 0) {
+        toast.error("Please fill all required fields.");
+        setLoading(false);
+        return;
+      }
 
-      const itemPromises = updatedItems.map(async (item) => {
-        const response = await axios.post(
-          "https://menu-mern-stack-app.onrender.com/api/menus/item",
-          item
-        );
-        return response.data._id;
-      });
-
-      const itemIds = await Promise.all(itemPromises);
-
-      await axios.post("https://menu-mern-stack-app.onrender.com/api/menus", {
+      const payload = {
         name: menuName,
         description: menuDescription,
-        items: itemIds,
-      });
+        items: items.map((item) => ({
+          name: item.name,
+          description: item.description,
+          price: Number(item.price),
+        })),
+      };
 
+      await axios.post(
+        "https://menu-mern-stack-app.onrender.com/api/menus",
+        payload
+      );
+      triggerRefresh();
       toast.success("Menu created successfully!");
       handleDialogClose();
     } catch (error) {
       toast.error("Error creating menu. Please try again.");
       console.error("Error creating menu:", error);
     } finally {
-      setLoading(false); // Hide loader
+      setLoading(false);
     }
   };
 
   const navLinks = ["Home", "Menu", "Make a Reservation", "Contact Us"];
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Logo"
-          style={{ width: "50px" }}
-        />
+    <Box
+      onClick={handleDrawerToggle}
+      sx={{ textAlign: "center", backgroundColor: "#121618" }}
+    >
+      <Typography
+        variant="h6"
+        sx={{ my: 2, fontFamily: "Oswald", fontSize: "16px" }}
+      >
+        <img src="/Logo.png" alt="Logo" style={{ width: "50px" }} />
         DEEP NET SOFT
       </Typography>
       <List>
         {navLinks.map((text) => (
           <ListItem button key={text}>
-            <ListItemText primary={text} />
+            <ListItemText
+              primary={text}
+              sx={{
+                color: "#F5F5F5",
+                fontWeight: text === "Menu" ? 600 : 400,
+                textTransform: "capitalize",
+                fontFamily: "Oswald",
+                fontSize: "16px",
+                borderBottom: text === "Menu" ? "2px solid #007bff" : "none",
+                cursor: "pointer",
+              }}
+            />
           </ListItem>
         ))}
         <ListItem button onClick={handleDialogOpen}>
-          <ListItemText primary="Add New Menu" />
+          <ListItemText
+            primary="Add New Menu"
+            sx={{
+              color: "#F5F5F5",
+              fontWeight: 600,
+              textTransform: "capitalize",
+              fontFamily: "Oswald",
+              fontSize: "16px",
+            }}
+          />
         </ListItem>
       </List>
     </Box>
@@ -154,11 +176,30 @@ const MenuBar = () => {
           </Typography>
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
             {navLinks.map((link) => (
-              <Button key={link} sx={{ color: "#F5F5F5" }}>
+              <Button
+                key={link}
+                sx={{
+                  color: "#F5F5F5",
+                  fontWeight: link === "Menu" ? 600 : 400,
+                  textTransform: "capitalize",
+                  fontFamily: "Oswald",
+                  fontSize: "16px",
+                  borderBottom: link === "Menu" ? "2px solid #007bff" : "none",
+                }}
+              >
                 {link}
               </Button>
             ))}
-            <Button onClick={handleDialogOpen} sx={{ color: "#F5F5F5" }}>
+            <Button
+              onClick={handleDialogOpen}
+              sx={{
+                color: "#F5F5F5",
+                fontWeight: 400,
+                textTransform: "capitalize",
+                fontFamily: "Oswald",
+                fontSize: "16px",
+              }}
+            >
               Add New Menu
             </Button>
           </Box>
@@ -178,10 +219,83 @@ const MenuBar = () => {
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        sx={{ "& .MuiDrawer-paper": { width: 240 } }}
+        PaperProps={{
+          sx: {
+            width: 240,
+            backgroundColor: "#121618",
+            color: "#F5F5F5",
+          },
+        }}
       >
         {drawer}
       </Drawer>
+
+      <Box
+        sx={{
+          position: "relative",
+          textAlign: "center",
+          background: `linear-gradient(90deg, rgba(0, 0, 0, 0.71) 0%, rgba(0, 0, 0, 0.5) 100%), url('/menubgcover.jpg')`,
+
+          backgroundSize: "cover",
+          backgroundPosition: "start",
+          backgroundRepeat: "no-repeat",
+          height: { xs: "231px", md: "311px" },
+          color: "#fff",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
+        }}
+      >
+        {/* <Box
+          sx={{
+            position: "absolute",
+            top: "-50px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10,
+          }}
+        >
+          <img
+            src="/Logo.png"
+            alt="Logo"
+            style={{ width: "100px", marginBottom: "10px" }}
+          />
+        </Box> */}
+
+
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 600,
+            textTransform: "uppercase",
+            fontSize: { lg: "64px", xs: "28px" },
+            lineHeight: { lg: "90px", xs: "35px" },
+            marginTop: "40px",
+            textShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
+            fontFamily: "Oswald",
+          }}
+        >
+          Menu
+        </Typography>
+        <Typography
+          sx={{
+            maxWidth: "700px",
+            margin: "10px auto",
+            fontSize: { lg: "18px", xs: "14px" },
+            fontFamily: "Kelly Slab",
+            fontWeight: 400,
+            textAlign: "center",
+            color: "#BBBBBB",
+            textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          Please take a look at our menu featuring food, drinks, and brunch. If
+          you'd like to place an order, use the "Order Online" button located
+          below the menu.
+        </Typography>
+      </Box>
 
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Add New Menu</DialogTitle>
@@ -237,8 +351,6 @@ const MenuBar = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-
     </>
   );
 };

@@ -41,11 +41,11 @@ const Footer = () => {
             >
               CONNECT WITH US
             </Typography>
-            <Typography>
+            <Typography sx={{fontFamily:'Oswald',color:'#645a5a',fontSize:'16px'}}>
               <PhoneIcon fontSize="small" sx={{ marginRight: "0.5rem" }} />
               +91 9567843340
             </Typography>
-            <Typography>
+            <Typography sx={{fontFamily:'Oswald',color:'#645a5a',fontSize:'16px'}}>
               <EmailIcon fontSize="small" sx={{ marginRight: "0.5rem" }} />
               info@deepnetsoft.com
             </Typography>
@@ -63,7 +63,7 @@ const Footer = () => {
           >
             <Box sx={{ display: "flex", justifyContent: "center", mb: "1rem" }}>
               <img
-                src="/logo.png"
+                src="/Logo.png"
                 alt="Deep Net Soft Logo"
                 style={{ height: "50px" }}
               />
@@ -71,16 +71,18 @@ const Footer = () => {
             <Typography
               variant="h6"
               sx={{
-                fontWeight: "bold",
+                fontWeight:400,
                 textTransform: "uppercase",
                 letterSpacing: "1px",
+                fontFamily: "Oswald",
+                marginBottom: "1rem",
               }}
             >
               DEEP <span style={{ color: "#4daaff" }}>NET</span> SOFT
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", mt: "1rem" }}>
               <IconButton
-                sx={{ color: "#fff" }}
+                sx={{ color: "#808080" }}
                 component="a"
                 href="#"
                 aria-label="Facebook"
@@ -88,7 +90,7 @@ const Footer = () => {
                 <i className="fab fa-facebook-f"></i>
               </IconButton>
               <IconButton
-                sx={{ color: "#fff" }}
+                sx={{ color: "#808080" }}
                 component="a"
                 href="#"
                 aria-label="Twitter"
@@ -96,7 +98,7 @@ const Footer = () => {
                 <i className="fab fa-twitter"></i>
               </IconButton>
               <IconButton
-                sx={{ color: "#fff" }}
+                sx={{ color: "#808080" }}
                 component="a"
                 href="#"
                 aria-label="YouTube"
@@ -104,7 +106,7 @@ const Footer = () => {
                 <i className="fab fa-youtube"></i>
               </IconButton>
               <IconButton
-                sx={{ color: "#fff" }}
+                sx={{ color: "#808080" }}
                 component="a"
                 href="#"
                 aria-label="Instagram"
@@ -130,11 +132,14 @@ const Footer = () => {
                 fontWeight: "bold",
                 marginBottom: "1rem",
                 color: "#4daaff",
+                fontFamily: "Oswald",
+                fontSize: "16px",
+                fontWeight:400
               }}
             >
               FIND US
             </Typography>
-            <Typography>
+            <Typography sx={{fontFamily:'Oswald',color:'#645a5a',fontSize:'16px'}}>
               <LocationOnIcon fontSize="small" sx={{ marginRight: "0.5rem" }} />
               First Floor, Geo Infopark,
               <br />
