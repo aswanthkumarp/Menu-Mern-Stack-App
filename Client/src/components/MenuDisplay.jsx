@@ -12,7 +12,7 @@ const MenuDisplay = () => {
   return (
     <Box
       sx={{
-        background:`url('/menudisplaybg.png')`,
+        background: `url('/menudisplaybg.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         color: "#fff",
@@ -23,7 +23,6 @@ const MenuDisplay = () => {
         padding: "2rem",
       }}
     >
-
       <Box
         sx={{
           position: "relative",
@@ -32,25 +31,28 @@ const MenuDisplay = () => {
           borderRadius: "8px",
           width: "100%",
           maxWidth: "800px",
-         
-          border:'1px solid white'
+
+          border: "1px solid white",
         }}
       >
-        
         <Box
           component="img"
           src="/cocktail1.png"
           alt="Cocktail Image"
           sx={{
             position: "absolute",
-            top: "-200px",
+            top: "-120px",
             left: "-60px",
             height: {
-              xs: "111px",
-              lg: "281px",
+              xs: "90px",
+              lg: "200px",
             },
             width: "auto",
             zIndex: 1,
+            display: {
+              xs: "none",
+              lg: "block",
+            },
           }}
         />
 
@@ -59,17 +61,23 @@ const MenuDisplay = () => {
           variant="h4"
           align="center"
           sx={{
-            fontWeight: "bold",
+            fontWeight: 600,
             marginBottom: "2rem",
             textTransform: "uppercase",
             letterSpacing: "2px",
+            fontFamily: "Oswald",
+            fontSize: {
+              xs: "30px",
+              lg: "50px",
+            },
+            boxShadow: "4px 3px 0px 0px #800020",
+            color: "#FFFFFF",
           }}
         >
           Brunch Cocktails
         </Typography>
 
         <Grid container spacing={4}>
-        
           <Grid item xs={12} md={6}>
             <Box sx={{ textAlign: "left" }}>
               <Typography
@@ -112,7 +120,6 @@ const MenuDisplay = () => {
             </Box>
           </Grid>
 
-       
           <Grid item xs={12} md={6}>
             <Box sx={{ textAlign: "left" }}>
               <Typography
@@ -137,7 +144,6 @@ const MenuDisplay = () => {
           </Grid>
         </Grid>
 
-     
         <Box
           component="img"
           src="/cocktail2.png"
@@ -152,6 +158,10 @@ const MenuDisplay = () => {
             },
             width: "auto",
             zIndex: 1,
+            display: {
+              xs: "none",
+              lg: "block",
+            },
           }}
         />
       </Box>

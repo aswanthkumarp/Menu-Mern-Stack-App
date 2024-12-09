@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,15 +10,89 @@ import {
   List,
   ListItem,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState } from "react";
+import axios from "axios";
 
 const MenuBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [menuData, setMenuData] = useState({
+    menuName: "",
+    menuDescription: "",
+    items: [{ name: "", description: "", price: "" }],
+  });
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setMenuData({
+      menuName: "",
+      menuDescription: "",
+      items: [{ name: "", description: "", price: "" }],
+    });
+  };
+
+  const handleInputChange = (e, index, field) => {
+    if (field === "menuName" || field === "menuDescription") {
+      setMenuData({ ...menuData, [field]: e.target.value });
+    } else {
+      const updatedItems = [...menuData.items];
+      updatedItems[index][field] = e.target.value;
+      setMenuData({ ...menuData, items: updatedItems });
+    }
+  };
+
+  const addNewItem = () => {
+    setMenuData({
+      ...menuData,
+      items: [...menuData.items, { name: "", description: "", price: "" }],
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const { menuName, menuDescription, items } = menuData;
+
+      // Create menu items
+      const itemPromises = items.map(async (item) => {
+        const response = await axios.post(
+          "https://menu-mern-stack-app.onrender.com/api/menus/item",
+          item
+        );
+        return response.data.id; // Assuming response returns the created item's `id`
+      });
+
+      const itemIds = await Promise.all(itemPromises);
+
+      // Create the menu with item IDs
+      const menuResponse = await axios.post(
+        "https://menu-mern-stack-app.onrender.com/api/menus",
+        {
+          name: menuName,
+          description: menuDescription,
+          items: itemIds,
+        }
+      );
+
+      console.log("Menu created:", menuResponse.data);
+
+      handleDialogClose(); // Close dialog on success
+    } catch (error) {
+      console.error("Error creating menu:", error);
+    }
   };
 
   const navLinks = ["Home", "Menu", "Make a Reservation", "Contact Us"];
@@ -45,28 +119,12 @@ const MenuBar = () => {
 
   return (
     <>
-    
-      <AppBar
-        component="nav"
-        position="static"
-        sx={{
-          bgcolor: "#1f1f1f",
-          boxShadow: "none",
-          zIndex:9
-        }}
-      >
+      <AppBar component="nav" position="static" sx={{ bgcolor: "#1f1f1f" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography
             variant="h6"
             component="div"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexGrow: 1,
-              fontWeight: "bold",
-              color: "#FFFFFF",
-              fontFamily: "Oswald",
-            }}
+            sx={{ fontWeight: "bold", color: "#FFFFFF" }}
           >
             <img
               src="/Logo.png"
@@ -77,20 +135,13 @@ const MenuBar = () => {
           </Typography>
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
             {navLinks.map((link) => (
-              <Button
-                key={link}
-                sx={{
-                  color: "#F5F5F5",
-                  fontWeight: link === "Menu" ? 600 : 400,
-                  textTransform: "capitalize",
-                  fontFamily: "Oswald",
-                  fontSize: "16px",
-                  borderBottom: link === "Menu" ? "2px solid #007bff" : "none",
-                }}
-              >
+              <Button key={link} sx={{ color: "#F5F5F5" }}>
                 {link}
               </Button>
             ))}
+            <Button onClick={handleDialogOpen} sx={{ color: "#F5F5F5" }}>
+              Add New Menu
+            </Button>
           </Box>
           <IconButton
             edge="start"
@@ -104,88 +155,70 @@ const MenuBar = () => {
         </Toolbar>
       </AppBar>
 
- 
       <Drawer
         anchor="left"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
-        }}
+        sx={{ "& .MuiDrawer-paper": { width: 240 } }}
       >
         {drawer}
       </Drawer>
 
-   
-      <Box
-        sx={{
-          position: "relative",
-          textAlign: "center",
-          background: `linear-gradient(90deg, rgba(0, 0, 0, 0.71) 0%, rgba(0, 0, 0, 0.5) 100%), url('/menubgcover.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "start",
-          backgroundRepeat: "no-repeat",
-          height: { xs: "231px", md: "311px" },
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          overflow: "hidden",
-        }}
-      >
-    
-        <Box
-          sx={{
-            position: "absolute",
-            top: "-50px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 10,
-          }}
-        >
-          <img
-            src="/Logo.png"
-            alt="Logo"
-            style={{ width: "100px", marginBottom: "10px" }}
+      {/* Dialog for adding new menu */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Add New Menu</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Menu Name"
+            fullWidth
+            margin="dense"
+            value={menuData.menuName}
+            onChange={(e) => handleInputChange(e, null, "menuName")}
           />
-        </Box>
-
-        {/* Text Section */}
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: 600,
-            textTransform: "uppercase",
-            fontSize: { lg: "64px", xs: "28px" },
-            lineHeight: { lg: "90px", xs: "35px" },
-            marginTop: "40px",
-            textShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
-          }}
-        >
-          Menu
-        </Typography>
-        <Typography
-          sx={{
-            maxWidth: "700px",
-            margin: "10px auto",
-            fontSize: { lg: "18px", xs: "14px" },
-            fontFamily: "Kelly Slab",
-            fontWeight: 400,
-            textAlign: "center",
-            color: "#BBBBBB",
-            textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
-          }}
-        >
-          Please take a look at our menu featuring food, drinks, and brunch. If
-          you'd like to place an order, use the "Order Online" button located
-          below the menu.
-        </Typography>
-      </Box>
+          <TextField
+            label="Menu Description"
+            fullWidth
+            margin="dense"
+            value={menuData.menuDescription}
+            onChange={(e) => handleInputChange(e, null, "menuDescription")}
+          />
+          {menuData.items.map((item, index) => (
+            <Box key={index} sx={{ mt: 2 }}>
+              <Typography variant="subtitle1">Menu Item {index + 1}</Typography>
+              <TextField
+                label="Item Name"
+                fullWidth
+                margin="dense"
+                value={item.name}
+                onChange={(e) => handleInputChange(e, index, "name")}
+              />
+              <TextField
+                label="Item Description"
+                fullWidth
+                margin="dense"
+                value={item.description}
+                onChange={(e) => handleInputChange(e, index, "description")}
+              />
+              <TextField
+                label="Item Price"
+                fullWidth
+                margin="dense"
+                value={item.price}
+                onChange={(e) => handleInputChange(e, index, "price")}
+              />
+            </Box>
+          ))}
+          <Button onClick={addNewItem} sx={{ mt: 2 }}>
+            Add New Item
+          </Button>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button onClick={handleSubmit} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

@@ -28,7 +28,7 @@ exports.addItem = async (req, res) => {
     const menuItem = new MenuItem(req.body);
     await menuItem.save();
 
-    const menu = await Menu.findById(req.body.menuId);
+    const menu = await Menu.findById(menuItem.id);
     menu.items.push(menuItem);
     await menu.save();
 
