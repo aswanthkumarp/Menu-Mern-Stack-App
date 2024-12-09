@@ -65,19 +65,25 @@ const MenuBar = () => {
   const handleSubmit = async () => {
     try {
       const { menuName, menuDescription, items } = menuData;
+  
+      const updatedItems = items.map(item => ({
+        ...item,
+        price: Number(item.price) 
+      }));
 
-      // Create menu items
-      const itemPromises = items.map(async (item) => {
+      const itemPromises = updatedItems.map(async (item) => {
         const response = await axios.post(
           "https://menu-mern-stack-app.onrender.com/api/menus/item",
           item
         );
-        return response.data.id; // Assuming response returns the created item's `id`
+        return response.data.id; 
       });
-
+  
       const itemIds = await Promise.all(itemPromises);
 
-      // Create the menu with item IDs
+      console.log(itemIds)
+  
+  
       const menuResponse = await axios.post(
         "https://menu-mern-stack-app.onrender.com/api/menus",
         {
@@ -86,14 +92,15 @@ const MenuBar = () => {
           items: itemIds,
         }
       );
-
+  
       console.log("Menu created:", menuResponse.data);
-
-      handleDialogClose(); // Close dialog on success
+  
+      handleDialogClose();
     } catch (error) {
       console.error("Error creating menu:", error);
     }
   };
+  
 
   const navLinks = ["Home", "Menu", "Make a Reservation", "Contact Us"];
 
