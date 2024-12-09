@@ -15,9 +15,12 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 
 const MenuBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,6 +30,7 @@ const MenuBar = () => {
     menuDescription: "",
     items: [{ name: "", description: "", price: "" }],
   });
+  const [loading, setLoading] = useState(false); // Loader state
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -46,11 +50,20 @@ const MenuBar = () => {
   };
 
   const handleInputChange = (e, index, field) => {
+    const value = e.target.value;
+
     if (field === "menuName" || field === "menuDescription") {
-      setMenuData({ ...menuData, [field]: e.target.value });
+      setMenuData({ ...menuData, [field]: value });
+    } else if (field === "price") {
+      // Restrict price to numbers only
+      if (/^\d*\.?\d*$/.test(value)) {
+        const updatedItems = [...menuData.items];
+        updatedItems[index][field] = value;
+        setMenuData({ ...menuData, items: updatedItems });
+      }
     } else {
       const updatedItems = [...menuData.items];
-      updatedItems[index][field] = e.target.value;
+      updatedItems[index][field] = value;
       setMenuData({ ...menuData, items: updatedItems });
     }
   };
@@ -63,12 +76,13 @@ const MenuBar = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true); 
     try {
       const { menuName, menuDescription, items } = menuData;
-  
-      const updatedItems = items.map(item => ({
+
+      const updatedItems = items.map((item) => ({
         ...item,
-        price: Number(item.price) 
+        price: Number(item.price),
       }));
 
       const itemPromises = updatedItems.map(async (item) => {
@@ -76,31 +90,26 @@ const MenuBar = () => {
           "https://menu-mern-stack-app.onrender.com/api/menus/item",
           item
         );
-        return response.data.id; 
+        return response.data._id;
       });
-  
+
       const itemIds = await Promise.all(itemPromises);
 
-      console.log(itemIds)
-  
-  
-      const menuResponse = await axios.post(
-        "https://menu-mern-stack-app.onrender.com/api/menus",
-        {
-          name: menuName,
-          description: menuDescription,
-          items: itemIds,
-        }
-      );
-  
-      console.log("Menu created:", menuResponse.data);
-  
+      await axios.post("https://menu-mern-stack-app.onrender.com/api/menus", {
+        name: menuName,
+        description: menuDescription,
+        items: itemIds,
+      });
+
+      toast.success("Menu created successfully!");
       handleDialogClose();
     } catch (error) {
+      toast.error("Error creating menu. Please try again.");
       console.error("Error creating menu:", error);
+    } finally {
+      setLoading(false); // Hide loader
     }
   };
-  
 
   const navLinks = ["Home", "Menu", "Make a Reservation", "Contact Us"];
 
@@ -108,7 +117,7 @@ const MenuBar = () => {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
         <img
-          src="https://via.placeholder.com/150" // Replace with your logo URL
+          src="https://via.placeholder.com/150"
           alt="Logo"
           style={{ width: "50px" }}
         />
@@ -120,6 +129,9 @@ const MenuBar = () => {
             <ListItemText primary={text} />
           </ListItem>
         ))}
+        <ListItem button onClick={handleDialogOpen}>
+          <ListItemText primary="Add New Menu" />
+        </ListItem>
       </List>
     </Box>
   );
@@ -171,7 +183,6 @@ const MenuBar = () => {
         {drawer}
       </Drawer>
 
-      {/* Dialog for adding new menu */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Add New Menu</DialogTitle>
         <DialogContent>
@@ -221,11 +232,13 @@ const MenuBar = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button onClick={handleSubmit} color="primary">
-            Save
+          <Button onClick={handleSubmit} color="primary" disabled={loading}>
+            {loading ? <CircularProgress size={20} /> : "Save"}
           </Button>
         </DialogActions>
       </Dialog>
+
+
     </>
   );
 };
