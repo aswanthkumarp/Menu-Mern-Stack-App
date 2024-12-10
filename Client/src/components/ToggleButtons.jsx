@@ -102,7 +102,7 @@ const ToggleButtons = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: "calc(100vh - 200px)", // Adjust height for full-page alignment
+            height: "calc(100vh - 200px)",
             color: "#fff",
           }}
         >
