@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ToggleButton, ToggleButtonGroup, Box } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup, Box, Skeleton } from "@mui/material";
 import MenuDisplay from "./MenuDisplay";
 import axios from "axios";
 import { MenuContext } from "../context/MenuContext";
@@ -20,20 +20,17 @@ const ToggleButtons = () => {
   const fetchMenus = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-       import.meta.env.VITE_API_URL
-      );
+      const response = await axios.get(import.meta.env.VITE_API_URL);
       setMenus(response.data);
-      setSelected(response.data[0]._id);
-      setLoading(false);
+      setSelected(response.data[0]?._id || ""); 
     } catch (err) {
       setError(err.message || "Failed to fetch menus");
+    } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
- 
 
+  useEffect(() => {
     fetchMenus();
   }, [refreshMenus]);
 
@@ -51,39 +48,67 @@ const ToggleButtons = () => {
           backgroundPosition: "center",
         }}
       >
-        <ToggleButtonGroup
-          value={selected}
-          exclusive
-          onChange={handleChange}
-          sx={{
-            "& .MuiToggleButtonGroup-grouped": {
-              border: "1px solid #fff",
-              color: "#fff",
-              "&.Mui-selected": {
-                backgroundColor: "#0796EF",
-                color: "#fff",
-                fontWeight: "bold",
-              },
-              "&:not(:last-of-type)": {
-                marginRight: "0.5rem",
-              },
-              "&:hover": {
-                backgroundColor: "#444",
-              },
-              fontFamily: "Oswald",
-            },
-          }}
-        >
-          {menus?.length > 0 &&
-            menus?.map((menu) => (
-              <ToggleButton value={menu._id}>{menu.name}</ToggleButton>
+        {loading ? (
+          <Box sx={{ display: "flex", gap: "0.5rem" }}>
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                width={100}
+                height={40}
+                animation="wave"
+                sx={{ borderRadius: "4px" }}
+              />
             ))}
-        </ToggleButtonGroup>
+          </Box>
+        ) : (
+          <ToggleButtonGroup
+            value={selected}
+            exclusive
+            onChange={handleChange}
+            sx={{
+              "& .MuiToggleButtonGroup-grouped": {
+                border: "1px solid #fff",
+                color: "#fff",
+                "&.Mui-selected": {
+                  backgroundColor: "#0796EF",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "#0796EF", 
+                  },
+                },
+                "&:not(:last-of-type)": {
+                  marginRight: "0.5rem",
+                },
+                "&:hover": {
+                  backgroundColor: "#444", 
+                },
+                fontFamily: "Oswald",
+              },
+            }}
+          >
+            {menus.map((menu) => (
+              <ToggleButton key={menu._id} value={menu._id}>
+                {menu.name}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        )}
       </Box>
 
       {loading ? (
         <Box sx={{ textAlign: "center", color: "#fff", marginTop: "1rem" }}>
-          Loading menus...
+          {Array.from({ length: 1 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              variant="rectangular"
+              width="auto"
+              height="536px"
+              animation="wave"
+              sx={{ borderRadius: "4px" }}
+            />
+          ))}
         </Box>
       ) : error ? (
         <Box sx={{ textAlign: "center", color: "red", marginTop: "1rem" }}>
