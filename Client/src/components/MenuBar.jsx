@@ -96,10 +96,7 @@ const MenuBar = () => {
         })),
       };
 
-      await axios.post(
-       import.meta.env.VITE_API_URL,
-        payload
-      );
+      await axios.post(import.meta.env.VITE_API_URL, payload);
       triggerRefresh();
       toast.success("Menu created successfully!");
       handleDialogClose();
@@ -118,26 +115,84 @@ const MenuBar = () => {
       onClick={handleDrawerToggle}
       sx={{ textAlign: "center", backgroundColor: "#121618" }}
     >
-      <Typography
-        variant="h6"
-        sx={{ my: 2, fontFamily: "Oswald", fontSize: "16px" }}
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        <img src="/Logo.png" alt="Logo" style={{ width: "50px" }} />
-        DEEP NET SOFT
-      </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <img src="/Logo.png" alt="Logo" style={{ width: "50px" }} />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: "5px",
+                fontFamily: "Oswald",
+                fontWeight: 600,
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#0796EF",
+                  fontSize: "18px",
+                  textTransform: "uppercase",
+                  fontFamily: "Oswald",
+                  fontWeight: 600,
+                }}
+              >
+                DEEP
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "#FFFFFF",
+                  fontSize: "18px",
+                  textTransform: "uppercase",
+                  fontFamily: "Oswald",
+                  fontWeight: 600,
+                }}
+              >
+                NET
+              </Typography>
+            </Box>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#857878",
+                fontSize: "18px",
+                textTransform: "uppercase",
+                fontFamily: "Oswald",
+                fontWeight: 400,
+              }}
+            >
+              SOFT
+            </Typography>
+          </Box>
+        </Box>
+      </Toolbar>
       <List>
         {navLinks.map((text) => (
           <ListItem button key={text}>
             <ListItemText
               primary={text}
               sx={{
-                color: "#F5F5F5",
+                color:text === "Menu" ? "#0796EF" : "#F5F5F5",
                 fontWeight: text === "Menu" ? 600 : 400,
                 textTransform: "capitalize",
                 fontFamily: "Oswald",
                 fontSize: "16px",
-                borderBottom: text === "Menu" ? "2px solid #007bff" : "none",
+         
                 cursor: "pointer",
+               
               }}
             />
           </ListItem>
@@ -162,18 +217,70 @@ const MenuBar = () => {
     <>
       <AppBar component="nav" position="static" sx={{ bgcolor: "#1f1f1f" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ fontWeight: "bold", color: "#FFFFFF" }}
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            <img
-              src="/Logo.png"
-              alt="Logo"
-              style={{ width: "50px", marginRight: "10px" }}
-            />
-            DEEP NET SOFT
-          </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <img src="/Logo.png" alt="Logo" style={{ width: "50px" }} />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "5px",
+                    fontFamily: "Oswald",
+                    fontWeight: 600,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "#0796EF",
+                      fontSize: "18px",
+                      textTransform: "uppercase",
+                      fontFamily: "Oswald",
+                      fontWeight: 600,
+                    }}
+                  >
+                    DEEP
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: "#FFFFFF",
+                      fontSize: "18px",
+                      textTransform: "uppercase",
+                      fontFamily: "Oswald",
+                      fontWeight: 600,
+                    }}
+                  >
+                    NET
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: "#857878",
+                    fontSize: "18px",
+                    textTransform: "uppercase",
+                    fontFamily: "Oswald",
+                    fontWeight: 400,
+                  }}
+                >
+                  SOFT
+                </Typography>
+              </Box>
+            </Box>
+          </Toolbar>
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
             {navLinks.map((link) => (
               <Button
@@ -263,7 +370,6 @@ const MenuBar = () => {
             style={{ width: "100px", marginBottom: "10px" }}
           />
         </Box> */}
-
 
         <Typography
           variant="h4"
